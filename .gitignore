@@ -7,3 +7,4 @@ node_modules/
 venv/
 **/venv/
 backend/app/database
+**/__pycache__

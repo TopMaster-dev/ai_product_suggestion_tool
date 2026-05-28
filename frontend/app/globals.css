@@ -1,0 +1,107 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --紺: #0f1f3d;
+  --紺中: #1a3260;
+  --青: #1e4d8c;
+  --青明: #2e6bc4;
+  --緑: #00c9a7;
+  --琥珀: #f59e0b;
+  --表面: #f7f9fc;
+  --表面2: #eef2f8;
+  --境界線: #d1dce8;
+  --文字主: #0f1f3d;
+  --文字副: #4a5c7a;
+  --文字薄: #8496b0;
+  --白: #ffffff;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic UI', sans-serif;
+  background: var(--表面);
+  color: var(--文字主);
+  overflow: hidden;
+  height: 100vh;
+}
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--境界線); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: var(--青明); }
+
+@keyframes 上から表示 {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes 右から表示 {
+  from { opacity: 0; transform: translateX(20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes フェードイン {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes タイピング {
+  0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+  40%           { transform: scale(1);   opacity: 1; }
+}
+
+@keyframes ステップ完了 {
+  0%   { transform: scale(0.8); opacity: 0; }
+  60%  { transform: scale(1.1); }
+  100% { transform: scale(1);   opacity: 1; }
+}
+
+@keyframes 回転 {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.メッセージ表示   { animation: 上から表示 0.3s ease forwards; }
+.パネル表示       { animation: 右から表示 0.35s cubic-bezier(0.16,1,0.3,1) forwards; }
+.フェードイン     { animation: フェードイン 0.2s ease forwards; }
+.ステップ完了     { animation: ステップ完了 0.4s ease forwards; }
+
+.タイピングドット {
+  display: inline-block;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--青明);
+  animation: タイピング 1.2s ease-in-out infinite;
+}
+.タイピングドット:nth-child(2) { animation-delay: 0.15s; }
+.タイピングドット:nth-child(3) { animation-delay: 0.30s; }
+
+.商品カード {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.商品カード:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(30,77,140,0.12);
+}
+
+.ナビアイテム { transition: all 0.15s ease; }
+.ナビアイテム:hover { background: rgba(255,255,255,0.08); }
+
+@media (max-width: 900px) {
+  body {
+    overflow: auto;
+    height: auto;
+  }
+
+  .商品カード {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .メッセージ表示 {
+    max-width: 100%;
+  }
+}
