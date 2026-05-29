@@ -37,8 +37,10 @@ from __future__ import annotations
              NULLIF(`キーワード2`, ''),
              '')                                                           AS 商品特徴,
     COALESCE(`白画像URL`, '')                                             AS 画像URL,
+    COALESCE(`楽天LGURL`, '')                                             AS 商品URL,
     COALESCE(`有効在庫数`, 0)                                             AS 在庫数,
-    COALESCE(NULLIF(CAST(`有効在庫数` AS SIGNED), 0), 9999)              AS 販売ランク,
+    NULLIF(TRIM(COALESCE(`発注ランク`, '')), '')                          AS 発注ランク,
+    NULLIF(TRIM(COALESCE(`重点商品区分`, '')), '')                        AS 重点区分,
     CONCAT_WS(',',
               NULLIF(`キーワード1`, ''),
               NULLIF(`キーワード2`, ''),
@@ -83,6 +85,8 @@ from __future__ import annotations
     "キーワード1",
     "キーワード2",
     "サブキーワード",
+    "小カテゴリ",
+    "小小カテゴリ",
     "材質",
     "対応（食洗機）",
     "対応（電子レンジ）",
@@ -94,6 +98,29 @@ from __future__ import annotations
     "対応（床暖房）",
     "対応（滑り止め）",
 ]
+
+# ─────────────────────────────────────────────
+# ORDER BY で人気度として使うランク変換
+#   発注ランク: A→1 / B→2 / ... / F→6 / Z→7 / NULL→8
+#   重点商品区分: 空でない → 0 (最優先) / 空 → 9
+# 値が小さいほど上位表示される
+# ─────────────────────────────────────────────
+ランクORDER_SQL = """
+    CASE TRIM(COALESCE(`重点商品区分`, ''))
+        WHEN '' THEN 9
+        ELSE 0
+    END,
+    CASE TRIM(COALESCE(`発注ランク`, ''))
+        WHEN 'A' THEN 1
+        WHEN 'B' THEN 2
+        WHEN 'C' THEN 3
+        WHEN 'D' THEN 4
+        WHEN 'E' THEN 5
+        WHEN 'F' THEN 6
+        WHEN 'Z' THEN 7
+        ELSE 8
+    END
+""".strip()
 
 
 # ─────────────────────────────────────────────

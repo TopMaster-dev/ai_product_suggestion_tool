@@ -3,6 +3,7 @@ import { useState, useRef, useEffect } from "react";
 import {
   X, Send, Bot, User, Package,
   ChevronDown, CheckCircle, Loader, AlertCircle,
+  ExternalLink, Star,
 } from "lucide-react";
 
 // ─────────────────────────────────────────────
@@ -18,8 +19,35 @@ interface 商品型 {
   参考売価_税抜: number;
   商品特徴: string;
   画像URL: string;
+  商品URL?: string | null;
   在庫数: number;
-  販売ランク: number;
+  発注ランク?: string | null;
+  重点区分?: string | null;
+}
+
+// URL を <a> に自動変換するヘルパー
+function 本文URLをリンク化(本文: string): React.ReactNode {
+  const URL正規表現 = /(https?:\/\/[^\s]+)/g;
+  const パーツ一覧 = 本文.split(URL正規表現);
+  return パーツ一覧.map((パーツ, i) =>
+    URL正規表現.test(パーツ) ? (
+      <a
+        key={i}
+        href={パーツ}
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{
+          color: "var(--青)",
+          textDecoration: "underline",
+          wordBreak: "break-all",
+        }}
+      >
+        {パーツ}
+      </a>
+    ) : (
+      <span key={i}>{パーツ}</span>
+    )
+  );
 }
 
 interface 処理ステップ型 {
@@ -482,7 +510,7 @@ export default function チャットパネル({ 閉じる }: { 閉じる: () => 
                 {メッセージ.エラー && (
                   <AlertCircle size={13} style={{ display: "inline", marginRight: 4 }} />
                 )}
-                {メッセージ.内容}
+                {本文URLをリンク化(メッセージ.内容)}
               </div>
             </div>
 
@@ -647,20 +675,51 @@ export default function チャットパネル({ 閉じる }: { 閉じる: () => 
                       </div>
 
                       {/* バッジ */}
-                      <div style={{ marginTop: 5, display: "flex", gap: 5, flexWrap: "wrap" }}>
+                      <div style={{ marginTop: 5, display: "flex", gap: 5, flexWrap: "wrap", alignItems: "center" }}>
                         <span style={{
                           background: "var(--表面2)", borderRadius: 4,
                           padding: "1px 7px", fontSize: 10, color: "var(--文字副)",
                         }}>
                           在庫：{商品.在庫数}点
                         </span>
-                        <span style={{
-                          background: "rgba(0,201,167,0.1)", borderRadius: 4,
-                          padding: "1px 7px", fontSize: 10,
-                          color: "var(--緑)", fontWeight: 600,
-                        }}>
-                          人気ランク #{商品.販売ランク}
-                        </span>
+                        {商品.重点区分 && (
+                          <span style={{
+                            background: "rgba(245,158,11,0.12)", borderRadius: 4,
+                            padding: "1px 7px", fontSize: 10,
+                            color: "#b45309", fontWeight: 700,
+                            display: "inline-flex", alignItems: "center", gap: 3,
+                          }}>
+                            <Star size={9} /> 重点商品
+                          </span>
+                        )}
+                        {商品.発注ランク && ["A","B","C"].includes(商品.発注ランク) && (
+                          <span style={{
+                            background: "rgba(0,201,167,0.1)", borderRadius: 4,
+                            padding: "1px 7px", fontSize: 10,
+                            color: "var(--緑)", fontWeight: 600,
+                          }}>
+                            発注ランク {商品.発注ランク}
+                          </span>
+                        )}
+                        {商品.商品URL && (
+                          <a
+                            href={商品.商品URL}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                            style={{
+                              marginLeft: "auto",
+                              background: "rgba(13,71,161,0.08)", borderRadius: 4,
+                              padding: "2px 8px", fontSize: 10,
+                              color: "var(--青)", fontWeight: 600,
+                              display: "inline-flex", alignItems: "center", gap: 3,
+                              textDecoration: "none",
+                            }}
+                            title="商品ページを新しいタブで開く"
+                          >
+                            商品ページ <ExternalLink size={9} />
+                          </a>
+                        )}
                       </div>
                     </div>
                   </div>
