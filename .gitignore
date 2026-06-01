@@ -8,3 +8,10 @@ venv/
 **/venv/
 backend/app/database
 **/__pycache__
+**.KEY
+*.key
+*.pem
+firstcol_id_ed25519*
+backend/setup_db.py
+backend/import_db.sql
+DEPLOYMENT.md
